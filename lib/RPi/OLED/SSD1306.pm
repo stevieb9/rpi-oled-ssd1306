@@ -41,7 +41,11 @@ use constant {
     SSD1306_SWITCHCAPVCC => 0x2,
 };
 
+my $oled;
+
 sub new {
+    return $oled if defined $oled;
+
     my ($class, $i2c_addr) = @_;
 
     ssd1306_begin(SSD1306_SWITCHCAPVCC, $i2c_addr);
@@ -49,7 +53,9 @@ sub new {
     select(undef, undef, undef, 0.1);
     ssd1306_clearDisplay();
 
-    return bless {}, $class;
+    my $self = bless {}, $class;
+    $oled = $self;
+    return $self;
 }
 sub string {
     my ($self, $str, $display) = @_;
