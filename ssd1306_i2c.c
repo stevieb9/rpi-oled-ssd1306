@@ -182,7 +182,7 @@ int buffer[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8] = {
 int _vccstate;
 int i2cd;
 
-#define ssd1306_swap(a, b) { int t = a; a = b; b = t; }
+#define swap_values(a, b) { int t = a; a = b; b = t; }
 
 // the most basic function, set a single pixel
 void ssd1306_drawPixel(int x, int y, unsigned int color)
@@ -193,7 +193,7 @@ void ssd1306_drawPixel(int x, int y, unsigned int color)
 	// check rotation, move pixel around if necessary
 	switch (rotation) {
 	case 1:
-		ssd1306_swap(x, y);
+		swap_values(x, y);
 		x = WIDTH - x - 1;
 		break;
 	case 2:
@@ -201,7 +201,7 @@ void ssd1306_drawPixel(int x, int y, unsigned int color)
 		y = HEIGHT - y - 1;
 		break;
 	case 3:
-		ssd1306_swap(x, y);
+		swap_values(x, y);
 		y = HEIGHT - y - 1;
 		break;
 	}
@@ -640,7 +640,7 @@ void ssd1306_drawFastHLine(int x, int y, int w, unsigned int color)
 	case 1:
 		// 90 degree rotation, swap x & y for rotation, then invert x
 		bSwap = true;
-		ssd1306_swap(x, y);
+		swap_values(x, y);
 		x = WIDTH - x - 1;
 		break;
 	case 2:
@@ -654,7 +654,7 @@ void ssd1306_drawFastHLine(int x, int y, int w, unsigned int color)
 		// 270 degree rotation, swap x & y for rotation, then invert y and 
 		// adjust y for w (not to become h)
 		bSwap = true;
-		ssd1306_swap(x, y);
+		swap_values(x, y);
 		y = HEIGHT - y - 1;
 		y -= (w - 1);
 		break;
@@ -677,7 +677,7 @@ void ssd1306_drawFastVLine(int x, int y, int h, unsigned int color)
 		// 90 degree rotation, swap x & y for rotation, then invert x and
 		// adjust x for h (now to become w)
 		bSwap = true;
-		ssd1306_swap(x, y);
+		swap_values(x, y);
 		x = WIDTH - x - 1;
 		x -= (h - 1);
 		break;
@@ -691,7 +691,7 @@ void ssd1306_drawFastVLine(int x, int y, int h, unsigned int color)
 	case 3:
 		// 270 degree rotation, swap x & y for rotation, then invert y
 		bSwap = true;
-		ssd1306_swap(x, y);
+		swap_values(x, y);
 		y = HEIGHT - y - 1;
 		break;
 	}
