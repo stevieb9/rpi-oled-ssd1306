@@ -33,7 +33,43 @@
 
 // #include <sys/mman.h>
 
-#line 37 "SSD1306.c"
+int *buffer, xWIDTH, yHEIGHT;
+
+void setup (int x, int y){
+
+    xWIDTH = x;
+    yHEIGHT = y;
+
+    buffer = malloc(sizeof(int) * (xWIDTH * yHEIGHT));
+
+    for (int i = 0; i < x*y; i++) {
+        buffer[i] = i;
+    }
+}
+
+void test (){
+    printf("w: %d, h: %d\n", xWIDTH, yHEIGHT);
+
+    for (int i=0; i<xWIDTH*yHEIGHT; i++){
+        printf("%d\n", buffer[i]);
+    }
+
+    // reset the buffer
+
+    memset(buffer, 0, xWIDTH * yHEIGHT * sizeof(int));
+
+    // reprint it
+
+    for (int i=0; i<xWIDTH*yHEIGHT; i++){
+        printf("%d: %d\n", buffer[i], i);
+    }
+}
+
+void done (){
+    free(buffer);
+}
+
+#line 73 "SSD1306.c"
 #ifndef PERL_UNUSED_VAR
 #  define PERL_UNUSED_VAR(var) if (0) var = var
 #endif
@@ -177,7 +213,53 @@ S_croak_xs_usage(const CV *const cv, const char *const params)
 #  define newXS_deffile(a,b) Perl_newXS_deffile(aTHX_ a,b)
 #endif
 
-#line 181 "SSD1306.c"
+#line 217 "SSD1306.c"
+
+XS_EUPXS(XS_RPi__OLED__SSD1306_setup); /* prototype to pass -Wmissing-prototypes */
+XS_EUPXS(XS_RPi__OLED__SSD1306_setup)
+{
+    dVAR; dXSARGS;
+    if (items != 2)
+       croak_xs_usage(cv,  "x, y");
+    {
+	int	x = (int)SvIV(ST(0))
+;
+	int	y = (int)SvIV(ST(1))
+;
+
+	setup(x, y);
+    }
+    XSRETURN_EMPTY;
+}
+
+
+XS_EUPXS(XS_RPi__OLED__SSD1306_test); /* prototype to pass -Wmissing-prototypes */
+XS_EUPXS(XS_RPi__OLED__SSD1306_test)
+{
+    dVAR; dXSARGS;
+    if (items != 0)
+       croak_xs_usage(cv,  "");
+    {
+
+	test();
+    }
+    XSRETURN_EMPTY;
+}
+
+
+XS_EUPXS(XS_RPi__OLED__SSD1306_done); /* prototype to pass -Wmissing-prototypes */
+XS_EUPXS(XS_RPi__OLED__SSD1306_done)
+{
+    dVAR; dXSARGS;
+    if (items != 0)
+       croak_xs_usage(cv,  "");
+    {
+
+	done();
+    }
+    XSRETURN_EMPTY;
+}
+
 
 XS_EUPXS(XS_RPi__OLED__SSD1306_ssd1306_begin); /* prototype to pass -Wmissing-prototypes */
 XS_EUPXS(XS_RPi__OLED__SSD1306_ssd1306_begin)
@@ -530,6 +612,9 @@ XS_EXTERNAL(boot_RPi__OLED__SSD1306)
 #  endif
 #endif
 
+        newXS_deffile("RPi::OLED::SSD1306::setup", XS_RPi__OLED__SSD1306_setup);
+        newXS_deffile("RPi::OLED::SSD1306::test", XS_RPi__OLED__SSD1306_test);
+        newXS_deffile("RPi::OLED::SSD1306::done", XS_RPi__OLED__SSD1306_done);
         newXS_deffile("RPi::OLED::SSD1306::ssd1306_begin", XS_RPi__OLED__SSD1306_ssd1306_begin);
         newXS_deffile("RPi::OLED::SSD1306::ssd1306_command", XS_RPi__OLED__SSD1306_ssd1306_command);
         newXS_deffile("RPi::OLED::SSD1306::ssd1306_clearDisplay", XS_RPi__OLED__SSD1306_ssd1306_clearDisplay);

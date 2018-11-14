@@ -24,9 +24,64 @@
 
 // #include <sys/mman.h>
 
+/* TESTING FOR GLOBAL VARS TO REPLACE CONSTS
+
+int *buffer, xWIDTH, yHEIGHT;
+
+void setup (int x, int y){
+
+    xWIDTH = x;
+    yHEIGHT = y;
+
+    buffer = malloc(sizeof(int) * (xWIDTH * yHEIGHT));
+
+    for (int i = 0; i < x*y; i++) {
+        buffer[i] = i;
+    }
+}
+
+void test (){
+    printf("w: %d, h: %d\n", xWIDTH, yHEIGHT);
+
+    for (int i=0; i<xWIDTH*yHEIGHT; i++){
+        printf("%d\n", buffer[i]);
+    }
+
+    // reset the buffer
+
+    memset(buffer, 0, xWIDTH * yHEIGHT * sizeof(int));
+
+    // reprint it
+
+    for (int i=0; i<xWIDTH*yHEIGHT; i++){
+        printf("%d: %d\n", buffer[i], i);
+    }
+}
+
+void done (){
+    free(buffer);
+}
+
+DONE TESTING  */
+
 MODULE = RPi::OLED::SSD1306  PACKAGE = RPi::OLED::SSD1306
 
 PROTOTYPES: DISABLE
+
+# testing
+
+void
+setup(x, y)
+    int x
+    int y
+
+void
+test()
+
+void
+done()
+
+# end testing
 
 void
 ssd1306_begin(switchvcc, i2caddr)
