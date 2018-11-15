@@ -24,7 +24,7 @@
 
 // #include <sys/mman.h>
 
-/* TESTING FOR GLOBAL VARS TO REPLACE CONSTS
+// TESTING FOR GLOBAL VARS TO REPLACE CONSTS
 
 int *buffer, xWIDTH, yHEIGHT;
 
@@ -61,8 +61,6 @@ void test (){
 void done (){
     free(buffer);
 }
-
-DONE TESTING  */
 
 MODULE = RPi::OLED::SSD1306  PACKAGE = RPi::OLED::SSD1306
 

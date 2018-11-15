@@ -33,6 +33,8 @@
 
 // #include <sys/mman.h>
 
+// TESTING FOR GLOBAL VARS TO REPLACE CONSTS
+
 int *buffer, xWIDTH, yHEIGHT;
 
 void setup (int x, int y){
@@ -69,7 +71,7 @@ void done (){
     free(buffer);
 }
 
-#line 73 "SSD1306.c"
+#line 75 "SSD1306.c"
 #ifndef PERL_UNUSED_VAR
 #  define PERL_UNUSED_VAR(var) if (0) var = var
 #endif
@@ -213,7 +215,7 @@ S_croak_xs_usage(const CV *const cv, const char *const params)
 #  define newXS_deffile(a,b) Perl_newXS_deffile(aTHX_ a,b)
 #endif
 
-#line 217 "SSD1306.c"
+#line 219 "SSD1306.c"
 
 XS_EUPXS(XS_RPi__OLED__SSD1306_setup); /* prototype to pass -Wmissing-prototypes */
 XS_EUPXS(XS_RPi__OLED__SSD1306_setup)
