@@ -8,3 +8,5 @@ BEGIN {
 }
 
 diag( "Testing RPi::OLED::SSD1306 $RPi::OLED::SSD1306::VERSION, Perl $], $^X" );
+
+done_testing();
