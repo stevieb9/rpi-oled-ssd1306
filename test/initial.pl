@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RPi::OLED::SSD1306 qw(:all);
+use RPi::OLED::SSD1306::128_64 qw(:all);
 
 ssd1306_begin(0x2, 0x3c);
 

@@ -1,4 +1,4 @@
-package RPi::OLED::SSD1306;
+package RPi::OLED::SSD1306::128_64;
 
 use strict;
 use warnings;
@@ -8,7 +8,7 @@ use Carp qw(croak);
 our $VERSION = '0.01';
 
 require XSLoader;
-XSLoader::load('RPi::OLED::SSD1306', $VERSION);
+XSLoader::load('RPi::OLED::SSD1306::128_64', $VERSION);
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -191,7 +191,7 @@ __END__
 
 =head1 NAME
 
-RPi::OLED::SSD1306 - Interface to OLED displays
+RPi::OLED::SSD1306::128_64 - Interface to the SSD1306-esque 128x64 OLED displays
 
 =head1 AUTHOR
 

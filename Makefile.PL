@@ -1,20 +1,19 @@
-use 5.006;
 use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME             => 'RPi::OLED::SSD1306',
+    NAME             => 'RPi::OLED::SSD1306::128_64',
     AUTHOR           => q{Steve Bertrand <steveb@cpan.org>},
-    VERSION_FROM     => 'lib/RPi/OLED/SSD1306.pm',
-    ABSTRACT_FROM    => 'lib/RPi/OLED/SSD1306.pm',
+    VERSION_FROM     => 'lib/RPi/OLED/SSD1306/128_64.pm',
+    ABSTRACT_FROM    => 'lib/RPi/OLED/SSD1306/128_64.pm',
     LICENSE          => 'artistic_2',
     LIBS              => ['-lwiringPi -lrt'],
     DEFINE            => '',
     INC              => '-I.',
     OBJECT           => '$(O_FILES)', # include the extra *.c files (bit.c)
     PL_FILES         => {},
-    MIN_PERL_VERSION => '5.006',
+    MIN_PERL_VERSION => '5.010',
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => '0',
     },

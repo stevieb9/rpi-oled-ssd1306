@@ -1,5 +1,5 @@
 /*
- * SSD1306.xs file for RPi::OLED::SSD1306 Perl distribution
+ * 128_64.xs file for RPi::OLED::SSD1306 Perl distribution
  *
  * Copyright (c) 2018 by Steve Bertrand
  *
@@ -22,7 +22,7 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 
-MODULE = RPi::OLED::SSD1306  PACKAGE = RPi::OLED::SSD1306
+MODULE = RPi::OLED::SSD1306::128_64  PACKAGE = RPi::OLED::SSD1306::128_64
 
 PROTOTYPES: DISABLE
 

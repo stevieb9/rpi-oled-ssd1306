@@ -3,9 +3,9 @@ use warnings;
 
 use Test::More;
 
-use RPi::OLED::SSD1306;
+use RPi::OLED::SSD1306::128_64;
 
-my $s = RPi::OLED::SSD1306->new;
+my $s = RPi::OLED::SSD1306::128_64->new;
 
 # full screen
 

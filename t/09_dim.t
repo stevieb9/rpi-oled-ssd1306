@@ -3,9 +3,9 @@ use warnings;
 
 use Test::More;
 
-use RPi::OLED::SSD1306;
+use RPi::OLED::SSD1306::128_64;
 
-my $s = RPi::OLED::SSD1306->new;
+my $s = RPi::OLED::SSD1306::128_64->new;
 
 is $s->rect(0, 0, 128, 64, 1), 1, "rect return ok";
 $s->display;
