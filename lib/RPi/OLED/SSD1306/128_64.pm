@@ -54,7 +54,7 @@ sub new {
 
     my ($class, $i2c_addr, $display_splash_screen) = @_;
 
-    $display_splash_screen //= 0;
+    $display_splash_screen //= 1;
 
     $i2c_addr //= 0x3C;
 
