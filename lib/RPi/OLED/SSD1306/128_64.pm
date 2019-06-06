@@ -52,13 +52,19 @@ my $oled;
 sub new {
     return $oled if defined $oled;
 
-    my ($class, $i2c_addr) = @_;
+    my ($class, $i2c_addr, $display_splash_screen) = @_;
+
+    $display_splash_screen //= 0;
 
     $i2c_addr //= 0x3C;
 
     ssd1306_begin(SSD1306_SWITCHCAPVCC, $i2c_addr);
-    ssd1306_display();
-    select(undef, undef, undef, 0.1);
+
+    if ($display_splash_screen){
+        ssd1306_display();
+        select(undef, undef, undef, 0.1);
+    }
+
     ssd1306_clearDisplay();
 
     my $self = bless {}, $class;
