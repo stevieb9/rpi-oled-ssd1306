@@ -1,5 +1,8 @@
 Revision history for RPi-OLED-SSD1306-128_64
 
+3.1802 UNREL
+    -
+
 3.1801    2026-06-12
         - Makefile.PL's wiringPi presence/version checks can now be bypassed
           with RPI_DIST_RELEASE=1 so release tarballs can be cut on non-Pi

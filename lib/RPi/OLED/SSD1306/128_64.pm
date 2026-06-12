@@ -5,7 +5,7 @@ use warnings;
 
 use Carp qw(croak);
 
-our $VERSION = '3.1801';
+our $VERSION = '3.1802';
 
 require XSLoader;
 XSLoader::load('RPi::OLED::SSD1306::128_64', $VERSION);
