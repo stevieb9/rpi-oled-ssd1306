@@ -1,7 +1,17 @@
 Revision history for RPi-OLED-SSD1306-128_64
 
 3.1802 UNREL
-    -
+    - Makefile.PL's minimum wiringPi version now comes from RPi::Const's
+      WIRINGPI_MIN_VERSION (literal 3.18 fallback when RPi::Const isn't
+      installed at configure time), replacing the stale hardcoded 2.36;
+      RPi::Const 1.07 added to PREREQ_PM; DESCRIPTION POD updated to 3.18+
+      and points at the canonical constant
+    - Added TECHNICAL INFORMATION POD (DEVICE SPECIFICS, COMMAND SET, ON THE
+      WIRE, DATASHEET): panel capabilities, wiring, the control/data byte
+      framing with the full init command sequence, and the exact I2C frames
+      the bundled C layer produces, verified against the SSD1306 datasheet
+    - Bundled the datasheet as docs/datasheet/SSD1306.pdf and repointed the
+      DATASHEET POD section at it instead of the web URL
 
 3.1801    2026-06-12
         - Makefile.PL's wiringPi presence/version checks can now be bypassed

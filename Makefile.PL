@@ -4,7 +4,12 @@ use ExtUtils::MakeMaker;
 
 use version;
 
-my $min_wpi_ver = 2.36;
+# The canonical wiringPi minimum lives in RPi::Const (WIRINGPI_MIN_VERSION);
+# fall back to the literal if RPi::Const isn't installed at configure time
+my $min_wpi_ver = eval {
+    require RPi::Const;
+    RPi::Const::WIRINGPI_MIN_VERSION();
+} || 3.18;
 
 # RPI_DIST_RELEASE allows cutting release tarballs on non-Pi machines by
 # bypassing the wiringPi presence/version checks below. Without it, a
@@ -36,7 +41,8 @@ if (! $ENV{RPI_DIST_RELEASE}){
     }
     else {
         print "\ncan not determine wiringPi version and RPI_DIST_RELEASE " .
-            "is not set. Ensure version 2.36+ is installed. Can't continue\n";
+            "is not set. Ensure version $min_wpi_ver+ is installed. " .
+            "Can't continue\n";
         exit;
     }
 }
@@ -60,8 +66,7 @@ WriteMakefile(
         'Test::More' => '0',
     },
     PREREQ_PM => {
-        #'ABC'              => '1.6',
-        #'Foo::Bar::Module' => '5.0401',
+        'RPi::Const' => '1.07',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'RPi-OLED-SSD1306-*' },

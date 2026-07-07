@@ -1,5 +1,6 @@
 128_64.xs
 Changes
+docs/datasheet/SSD1306.pdf
 lib/RPi/OLED/SSD1306/128_64.pm
 LICENSE
 Makefile.PL

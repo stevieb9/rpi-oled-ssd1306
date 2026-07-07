@@ -204,7 +204,10 @@ RPi::OLED::SSD1306::128_64 - Interface to the SSD1306-esque 128x64 OLED displays
 
 Provides the ability to use the 128x64 SSD1306 type OLED displays.
 
-This distribution requires wiringPi version 2.36+ to be installed.
+This distribution requires wiringPi version 3.18+ to be installed (the
+canonical minimum for the whole RPi:: family is published as
+C<WIRINGPI_MIN_VERSION> in L<RPi::Const>, which this distribution's
+C<Makefile.PL> consumes).
 
 =head1 METHODS
 
@@ -441,6 +444,100 @@ C<0> will set it back to normal (white on black background). Defaults to C<0> if
 not sent in.
 
 Returns C<1> on success.
+
+=head1 TECHNICAL INFORMATION
+
+The bus work lives in the bundled C layer (C<ssd1306_i2c.c>, a port of
+the Adafruit SSD1306 library); the Perl methods draw into a 1KB
+framebuffer on the Pi and push it to the panel over I2C.
+
+=head2 DEVICE SPECIFICS
+
+    - SSD1306: 128x64 monochrome OLED controller/driver
+    - Graphics RAM is 1KB, arranged as 8 pages of 128 bytes; each byte
+      is a vertical strip of 8 pixels
+    - This driver mirrors that RAM in a Pi-side buffer: the draw calls
+      only touch the buffer, and display() pushes all 1024 bytes out
+    - I2C address 0x3C (the module default), or 0x3D with the SA0 line
+      strapped high
+    - I2C clocks up to 400kHz (t_cycle 2.5us minimum); the Pi's default
+      100kHz works fine
+    - Logic supply 1.65-3.3V; the higher OLED panel voltage is made by
+      the chip's internal charge pump, switched on during init
+    - The bare chip also speaks SPI and parallel buses; I2C breakout
+      boards hardwire the interface-select pins
+
+Wiring a typical 4-pin I2C breakout: VCC to 3.3V, GND to ground, SDA to
+GPIO 2 (pin 3), SCL to GPIO 3 (pin 5). C<i2cdetect -y 1> shows the panel
+at C<0x3C>.
+
+=head2 COMMAND SET
+
+Every byte sent to the chip is framed by a control byte (see
+L</ON THE WIRE>) marking it as either a command or display data - there
+are no addressable registers. The commands this driver uses:
+
+    0xAE / 0xAF   Display off / on
+    0x81 xx       Contrast (init sets 0xCF; dim() sends 0x00)
+    0xA4          Resume displaying the RAM contents
+    0xA6 / 0xA7   Normal / inverted video (invert_display())
+    0x20 00       Memory addressing mode: horizontal, auto-wrapping
+    0x21 s e      Column address window (display() uses 0-127)
+    0x22 s e      Page address window (display() uses 0-7)
+    0x40+n        Display start line (init: line 0)
+    0xA1          Segment remap - X flip (init)
+    0xC8          COM scan direction - Y flip (init)
+    0xA8 3F       Multiplex ratio: 64 rows
+    0xD3 00       Display offset: none
+    0xD5 80       Display clock divide ratio / oscillator
+    0xD9 F1       Precharge periods
+    0xDA 12       COM pins layout for 128x64
+    0xDB 40       VCOMH deselect level
+    0x8D 14       Charge pump on
+    0x2E          Deactivate scroll
+
+C<new()> runs the whole bring-up sequence above; after that the only
+traffic is the odd contrast/invert command and display() pushes.
+
+=head2 ON THE WIRE
+
+The C layer writes through the kernel's C</dev/i2c-1>, and every frame
+is three bytes: the chip address, a control byte, then one payload byte.
+The control byte is C<0x00> for a command and C<0x40> for display data
+(bit 6 is D/C#, bit 7 is Co):
+
+    S = START    P = STOP    A = ACK (receiver pulls SDA low)
+
+A command - here 0xAF (display on) at address 0x3C, which is C<0x78> on
+the wire:
+
+    +---+------+---+------+---+------+---+---+
+    | S | 0x78 | A | 0x00 | A | 0xAF | A | P |
+    +---+------+---+------+---+------+---+---+
+         addr+W     Control    Command
+         (0x3C)     = command
+
+One framebuffer byte during display():
+
+    +---+------+---+------+---+------+---+---+
+    | S | 0x78 | A | 0x40 | A | 0xFF | A | P |
+    +---+------+---+------+---+------+---+---+
+         addr+W     Control    Eight vertical
+                    = data     pixels, all lit
+
+A full display() is six command frames (resetting the column and page
+windows to 0-127 / 0-7) followed by 1024 data frames, one per buffer
+byte - roughly 30,000 clocks, or about 0.3s per refresh at the Pi's
+default 100kHz. Batch your drawing and call display() once. (The chip
+happily accepts many data bytes after a single control byte; sending
+byte-by-byte is a known inefficiency of the bundled C library.)
+
+=head2 DATASHEET
+
+The Solomon Systech SSD1306 datasheet (rev 1.1) is distributed with this
+software as F<docs/datasheet/SSD1306.pdf>. It covers the command set, the
+GDDRAM layout, the I2C control byte framing, and the charge pump this
+driver enables.
 
 =head1 AUTHOR
 
