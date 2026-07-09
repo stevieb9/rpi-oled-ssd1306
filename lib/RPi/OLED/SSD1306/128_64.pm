@@ -50,13 +50,25 @@ use constant {
 my $oled;
 
 sub new {
-    return $oled if defined $oled;
-
     my ($class, $i2c_addr, $display_splash_screen) = @_;
 
+    $i2c_addr             //= 0x3C;
     $display_splash_screen //= 1;
 
-    $i2c_addr //= 0x3C;
+    # Singleton: only one panel object exists. A second new() returns the live
+    # one, but warn if it asks for a different address or splash setting - those
+    # can't take effect on the already-initialized display, and silently
+    # ignoring them hides the mistake.
+    if (defined $oled){
+        if ($i2c_addr != $oled->{i2c_addr}
+            || $display_splash_screen != $oled->{splash}){
+            warn "RPi::OLED::SSD1306::128_64: new() is a singleton; returning "
+               . "the existing display (addr "
+               . sprintf('0x%02X', $oled->{i2c_addr})
+               . ") and ignoring the new address/splash arguments\n";
+        }
+        return $oled;
+    }
 
     ssd1306_begin(SSD1306_SWITCHCAPVCC, $i2c_addr);
 
@@ -67,7 +79,7 @@ sub new {
 
     ssd1306_clearDisplay();
 
-    my $self = bless {}, $class;
+    my $self = bless { i2c_addr => $i2c_addr, splash => $display_splash_screen }, $class;
     $oled = $self;
     return $self;
 }
@@ -141,7 +153,7 @@ sub pixel {
         croak "X must be between 0 and 127";
     }
     if ($y < 0 || $y > 63){
-        croak "Y must be betwen 0 and 63";
+        croak "Y must be between 0 and 63";
     }
 
     ssd1306_drawPixel($x, $y, $colour);

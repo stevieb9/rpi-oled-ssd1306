@@ -11,6 +11,8 @@ README
 ssd1306_i2c.c
 ssd1306_i2c.h
 t/00-load.t
+t/05-unit.t
+t/10-live.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t

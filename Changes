@@ -22,6 +22,14 @@ Revision history for RPi-OLED-SSD1306-128_64
       the family-canonical RPi::Const::BuildCheck::wiringpi_build_check() (via
       CONFIGURE_REQUIRES); the minimum still resolves to RPi::Const's
       WIRINGPI_MIN_VERSION, now enforced from that single source
+    - new() no longer silently ignores its arguments when the singleton already
+      exists: a second new() with a different i2c address or splash setting now
+      warns (it still returns the live display, since those can't be re-applied)
+    - Added t/05-unit.t: HW-free coverage of the text_size/rect/pixel/dim/
+      invert_display bounds and integer croaks, plus the singleton behaviour
+    - Added t/10-live.t: an on-device smoke test (new/clear/text/string/rect/
+      pixel/display/invert/dim) gated on RPI_OLED, for a real SSD1306 panel
+    - Fixed a typo in pixel()'s Y-bound croak ("betwen" -> "between")
 
 3.1801    2026-06-12
         - Makefile.PL's wiringPi presence/version checks can now be bypassed
