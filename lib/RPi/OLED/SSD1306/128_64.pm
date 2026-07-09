@@ -517,20 +517,23 @@ the wire:
          addr+W     Control    Command
          (0x3C)     = command
 
-One framebuffer byte during display():
+The framebuffer streams out in a single transaction - one 0x40 control
+byte (Co = 0, so every byte after it is display data), then all 1024
+buffer bytes, before the STOP:
 
-    +---+------+---+------+---+------+---+---+
-    | S | 0x78 | A | 0x40 | A | 0xFF | A | P |
-    +---+------+---+------+---+------+---+---+
-         addr+W     Control    Eight vertical
-                    = data     pixels, all lit
+    +---+------+---+------+---+------+-- --+------+---+---+
+    | S | 0x78 | A | 0x40 | A | 0xFF | ... | 0x00 | A | P |
+    +---+------+---+------+---+------+-- --+------+---+---+
+         addr+W     Control    1024 data bytes, eight
+                    = data     vertical pixels each
 
 A full display() is six command frames (resetting the column and page
-windows to 0-127 / 0-7) followed by 1024 data frames, one per buffer
-byte - roughly 30,000 clocks, or about 0.3s per refresh at the Pi's
-default 100kHz. Batch your drawing and call display() once. (The chip
-happily accepts many data bytes after a single control byte; sending
-byte-by-byte is a known inefficiency of the bundled C library.)
+windows to 0-127 / 0-7) followed by that one 1025-byte data transaction
+- about 0.09s per refresh at the Pi's default 100kHz, which is bus-bound
+(raise C<dtparam=i2c_arm_baudrate> to go faster). Earlier releases sent a
+control+data frame per byte (~1024 transactions, ~0.3s); the driver now
+streams the whole buffer after a single control byte, falling back to the
+byte-by-byte path only if an adapter caps the single transfer.
 
 =head2 DATASHEET
 
