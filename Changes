@@ -18,6 +18,10 @@ Revision history for RPi-OLED-SSD1306-128_64
       transactions). Measured on a 128x64 panel at 100kHz: ~325ms -> ~94ms per
       refresh (3.4x; now bus-bound). Falls back to the byte-by-byte path if an
       adapter caps the single transfer. ON THE WIRE POD updated to match
+    - Replaced the inline wiringPi presence/version guard in Makefile.PL with
+      the family-canonical RPi::Const::BuildCheck::wiringpi_build_check() (via
+      CONFIGURE_REQUIRES); the minimum still resolves to RPi::Const's
+      WIRINGPI_MIN_VERSION, now enforced from that single source
 
 3.1801    2026-06-12
         - Makefile.PL's wiringPi presence/version checks can now be bypassed
