@@ -90,6 +90,17 @@ sub clear {
 
     return 1;
 }
+sub clear_buffer {
+    my ($self) = @_;
+
+    # Zero the in-memory framebuffer and home the cursor WITHOUT pushing to the
+    # panel (unlike clear(), which also calls display()). Pairing this with a
+    # single display() lets a caller rebuild and push a whole frame in one
+    # write, so a continuously-refreshing screen updates with no blank flash.
+    ssd1306_clearDisplay();
+
+    return 1;
+}
 sub display {
     my ($self) = @_;
     ssd1306_display();
@@ -212,6 +223,37 @@ __END__
 
 RPi::OLED::SSD1306::128_64 - Interface to the SSD1306-esque 128x64 OLED displays
 
+=head1 SYNOPSIS
+
+    use RPi::OLED::SSD1306::128_64;
+
+    # The panel defaults to I2C address 0x3C
+    my $oled = RPi::OLED::SSD1306::128_64->new;
+
+    $oled->text_size(1);
+
+    # Draw text and push it to the screen. A trailing 1 on string() calls
+    # display() for you; "\n" starts a new line, and long lines wrap.
+    $oled->string("Hello, OLED!\nline two", 1);
+
+    # Drawing primitives fill the in-memory buffer; call display() to show them
+    $oled->clear;
+    $oled->rect(0, 0, 40, 20, 1);           # filled rectangle
+    $oled->horizontal_line(0, 32, 128, 1);  # a horizontal line
+    $oled->pixel(64, 40, 1);                # a single pixel
+    $oled->display;
+
+    # Flicker-free continuous refresh: rebuild the whole frame in the buffer
+    # each pass, then push it once (no blank flash between frames)
+    while (1) {
+        $oled->clear_buffer;                     # zero buffer + home cursor
+        $oled->string(sprintf("tick %d", time)); # draw (no auto-display)
+        $oled->display;                          # single push to the panel
+        select(undef, undef, undef, 0.2);
+    }
+
+    $oled->clear;   # blank the panel when done
+
 =head1 DESCRIPTION
 
 Provides the ability to use the 128x64 SSD1306 type OLED displays.
@@ -241,6 +283,16 @@ which is extremely common.
 
 Wipes the display clean, and sets the cursor to the top-left position on the
 screen.
+
+Returns C<< 1 >> on success.
+
+=head2 clear_buffer
+
+Zeroes the in-memory framebuffer and homes the cursor, but does B<not> push the
+result to the panel (unlike L</clear>, which also refreshes the screen). Pair it
+with a single L</display> to rebuild and draw a whole frame in one write - handy
+for a continuously-updating screen, where clearing straight to the panel each
+frame would flicker.
 
 Returns C<< 1 >> on success.
 
