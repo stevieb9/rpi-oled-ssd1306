@@ -1,6 +1,6 @@
 Revision history for RPi-OLED-SSD1306-128_64
 
-3.1802 UNREL
+3.1802    2026-07-16
     - Makefile.PL's minimum wiringPi version now comes from RPi::Const's
       WIRINGPI_MIN_VERSION (literal 3.18 fallback when RPi::Const isn't
       installed at configure time), replacing the stale hardcoded 2.36;
