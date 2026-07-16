@@ -57,4 +57,23 @@ my $mod = 'RPi::OLED::SSD1306::128_64';
     like $warn, qr/singleton/, '  ...and warns the new address/splash is ignored';
 }
 
+# --- sleep()/wake(): the exact SSD1306 command sequences, captured HW-free ---
+{
+    my @cmd;
+    no warnings qw(redefine once);
+    local *RPi::OLED::SSD1306::128_64::ssd1306_command = sub { push @cmd, $_[0] };
+
+    my $o = bless {}, $mod;
+
+    @cmd = ();
+    is $o->sleep, 1, 'sleep(): returns 1';
+    is_deeply \@cmd, [0x8D, 0x10, 0xAE],
+        'sleep(): charge pump off (0x8D 0x10) then display off (0xAE)';
+
+    @cmd = ();
+    is $o->wake, 1, 'wake(): returns 1';
+    is_deeply \@cmd, [0x8D, 0x14, 0xAF],
+        'wake(): charge pump on (0x8D 0x14) then display on (0xAF)';
+}
+
 done_testing();

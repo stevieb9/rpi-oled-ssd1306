@@ -36,6 +36,10 @@ Revision history for RPi-OLED-SSD1306-128_64
       flicker-free redraw for continuously-updating screens
     - Added a SYNOPSIS to the POD (instantiation, text, drawing primitives, and
       the flicker-free clear_buffer/string/display refresh loop)
+    - Added sleep() and wake(): sleep() powers the panel down to microamps
+      (charge pump off, 0x8D 0x10, then display off, 0xAE), retaining the
+      framebuffer; wake() reverses it (0x8D 0x14, then 0xAF). SYNOPSIS gains a
+      "Powering down" block
 
 3.1801    2026-06-12
         - Makefile.PL's wiringPi presence/version checks can now be bypassed

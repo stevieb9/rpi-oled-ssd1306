@@ -45,6 +45,11 @@ $EXPORT_TAGS{all} = [@EXPORT_OK];
 
 use constant {
     SSD1306_SWITCHCAPVCC => 0x2,
+    SSD1306_DISPLAY_OFF  => 0xAE,
+    SSD1306_DISPLAY_ON   => 0xAF,
+    SSD1306_CHARGE_PUMP  => 0x8D,
+    SSD1306_PUMP_OFF     => 0x10,
+    SSD1306_PUMP_ON      => 0x14,
 };
 
 my $oled;
@@ -215,6 +220,29 @@ sub invert_display {
 
     return 1;
 }
+sub sleep {
+    my ($self) = @_;
+
+    # Put the panel into its low-power state: switch off the internal charge
+    # pump that drives the OLED, then turn the display off. The panel draws
+    # only ~uA until wake(). The framebuffer is retained, so wake() brings the
+    # same image back
+    ssd1306_command(SSD1306_CHARGE_PUMP);
+    ssd1306_command(SSD1306_PUMP_OFF);
+    ssd1306_command(SSD1306_DISPLAY_OFF);
+
+    return 1;
+}
+sub wake {
+    my ($self) = @_;
+
+    # Reverse sleep(): power the charge pump back up, then turn the display on
+    ssd1306_command(SSD1306_CHARGE_PUMP);
+    ssd1306_command(SSD1306_PUMP_ON);
+    ssd1306_command(SSD1306_DISPLAY_ON);
+
+    return 1;
+}
 
 1;
 __END__
@@ -253,6 +281,11 @@ RPi::OLED::SSD1306::128_64 - Interface to the SSD1306-esque 128x64 OLED displays
     }
 
     $oled->clear;   # blank the panel when done
+
+    # Powering down
+
+    $oled->sleep;   # charge pump + display off; panel draws ~uA, image kept
+    $oled->wake;    # power the panel back up with the same contents
 
 =head1 DESCRIPTION
 
@@ -508,6 +541,24 @@ C<0> will set it back to normal (white on black background). Defaults to C<0> if
 not sent in.
 
 Returns C<1> on success.
+
+=head2 sleep
+
+Puts the panel into its low-power state: switches off the internal charge pump
+that drives the OLED, then turns the display off (SSD1306 commands C<0x8D 0x10>
+and C<0xAE>). The panel then draws only microamps. The framebuffer is retained,
+so a later L</wake> brings the same image back. Handy for leaving the display
+dark at the end of a program without powering the board down.
+
+Takes no parameters. Returns C<1> on success.
+
+=head2 wake
+
+Reverses L</sleep>: powers the charge pump back up and turns the display on
+(SSD1306 commands C<0x8D 0x14> and C<0xAF>), restoring the image that was on
+the panel when it was put to sleep.
+
+Takes no parameters. Returns C<1> on success.
 
 =head1 TECHNICAL INFORMATION
 
